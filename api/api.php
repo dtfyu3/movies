@@ -49,7 +49,7 @@ function getMyAPIKey(){
     // Загружаем переменные из .env
     $env = loadEnv('../.env');
 
-    $data = ['api_key' => $env];
+    $data =  $env;
     
     echo json_encode($data);
 }
