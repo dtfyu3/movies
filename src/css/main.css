@@ -1,0 +1,88 @@
+html {
+    scroll-behavior: smooth;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    font-size: 20px;
+    text-align: center;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.movies-grid {
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    width: 90%;
+    max-width: none;
+}
+
+.movie-card {
+    position: relative;
+    border-radius: 50%;
+    border: 1px solid;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    aspect-ratio: 2 / 3;
+}
+
+.card-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+.card-poster{
+    width: 100%;
+    height: 100%;
+}
+.movie-card:hover img {
+    transform: scale(1.05);
+}
+.movie-card .card-header {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 18px;
+    text-align: center;
+    padding: 15px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.card-header span{
+    display: inline-block;
+    transform: translateX(0);
+}
+
+@keyframes marquee {
+    from { transform: translateX(0); } 
+    to { transform: translateX(-100%); } 
+}
+.movie-card:hover .card-header {
+    opacity: 1;
+}
+/* .movie-card .card-header:not(:hover) span{
+    animation: none;
+} */
+ .card-header span.marquee{
+    display: inline-block;
+    animation: marquee 2s linear infinite;
+    animation-delay: 0.8s;
+ }
