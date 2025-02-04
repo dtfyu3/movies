@@ -12,8 +12,9 @@ function getDbConnection()
     return $conn;
 }
 
-function getMoviesNames(){
-    try{
+function getMoviesNames()
+{
+    try {
         $conn = getDbConnection();
         $stmt = $conn->prepare('select * from movies_list order by name');
         $stmt->execute();
@@ -26,15 +27,36 @@ function getMoviesNames(){
         }
         $stmt->close();
         $conn->close();
+    } catch (Exception $e) {
+        $response['error'] = $e->getMessage();
     }
-   catch(Exception $e){
-    $response['error'] = $e->getMessage();
-   }
-   echo json_encode($response);
+    echo json_encode($response);
 }
+function getMyAPIKey(){
+    function loadEnv($file) {
+        $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $env = [];
+        foreach ($lines as $line) {
+            if (strpos($line, '=') !== false) {
+                list($key, $value) = explode('=', $line, 2);
+                $env[trim($key)] = trim($value);
+            }
+        }
+        
+        return $env;
+    }
+    
+    // Загружаем переменные из .env
+    $env = loadEnv('../.env');
 
+    $data = ['api_key' => $env];
+    
+    echo json_encode($data);
+}
 $data = json_decode(file_get_contents('php://input'), true);
 $get_action = null;
 if (isset($_GET['get_action'])) $get_action = $_GET['get_action'];
-if ($get_action && $get_action === 'getMoviesNames') getMoviesNames();
-?>
+if ($get_action) {
+    if ($get_action === 'getMoviesNames') getMoviesNames();
+    elseif ($get_action === 'getMyAPIKey') getMyAPIKey();
+}
