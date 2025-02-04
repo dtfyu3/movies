@@ -8,7 +8,7 @@ function getMyAPIKey() {
         if (xhr.status >= 200 && xhr.status < 300) {
             try {
                 const data = JSON.parse(xhr.response);
-                API_KEY = data['api_key'];
+                API_KEY = data['API_KEY'];
             }
             catch (e) {
                 console.error('Error parsing JSON:', e);
