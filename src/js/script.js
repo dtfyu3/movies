@@ -1,3 +1,27 @@
+const swiper = new Swiper('.swiper', {
+    loop: false,
+    spaceBetween: 30,
+    slidesPerView: 1,
+    pagination: {
+      el: '.swiper-pagination',
+    },
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    },
+
+    scrollbar: {
+      el: '.swiper-scrollbar',
+    },
+  });
+  setTimeout(() => {
+    swiper.update();
+}, 100);
+swiper.on('slideChange', function() {
+    setTimeout(() => {
+        swiper.update(); // Пересчитываем размеры
+    }, 50);
+});
 let API_KEY;
 function getMyAPIKey() {
     const xhr = new XMLHttpRequest();
@@ -47,9 +71,12 @@ function removeSpinner() {
     if (document.getElementById('loading-spinner')) document.getElementById('loading-spinner').remove();
 }
 function createCard(movie) {
+    // const swiper = document.createElement('div');
+    // swiper.classList.add('swiper-slide');
     const card = document.createElement('div');
     card.dataset['id'] = '';
     card.dataset['genres'] = '';
+    card.classList.add('swiper-slide');
     card.classList.add('movie-card');
     const header = document.createElement('div');
     header.classList.add('card-header');
@@ -65,23 +92,40 @@ function createCard(movie) {
     img.alt = 'Здесь должен быть постер';
     poster.appendChild(img);
     card.appendChild(poster);
+    // swiper.appendChild(card);
     return card;
 }
 
 function addCards(cards) {
     return new Promise((resolve) => {
         let index = 0;
-        const container = document.querySelector('.movies-grid');
+        const container = document.querySelector('.swiper-wrapper');
         function addNextChunk() {
             const fragment = document.createDocumentFragment();
             for (let i = 0; index < cards.length; i++) {
                 const card = createCard(cards[index]);
                 fragment.appendChild(card);
                 index++;
-                loadMoviePoster(card, cards[index - 1]);
+                // if(index <=1 ) loadMoviePoster(card, cards[index - 1]);
             }
-            if (index >= cards.length) resolve();
             container.prepend(fragment);
+            container.childNodes.forEach((card, i) => {
+                const img = card.querySelector('.card-poster img');
+
+                // Если картинка еще не загружена
+                if (!img.src || img.src === '' || img.src === 'http://movies/') {
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                loadMoviePoster(card, cards[i]);
+                                observer.disconnect(); // Останавливаем наблюдателя после загрузки
+                            }
+                        });
+                    }, { threshold: 0.1 }); // Загрузить, когда карточка хотя бы на 50% видна
+                    observer.observe(card);
+                }
+            });
+            if (index >= cards.length) resolve();
             if (index < cards.length) {
                 requestAnimationFrame(addNextChunk);
             } else {
@@ -114,6 +158,7 @@ function fetchMovieImage(card, movie) {
         const container = card.querySelector('.card-poster');
         createSpinner(container);
         const apiUrl = `https://api.kinopoisk.dev/v1.4/movie/search?query=${encodeURIComponent(movie.name)}`;
+        // const apiUrl = '';
         const xhr = new XMLHttpRequest();
         xhr.open('GET', apiUrl, true);
         xhr.setRequestHeader('X-API-KEY', API_KEY);
@@ -125,9 +170,11 @@ function fetchMovieImage(card, movie) {
                     const response = JSON.parse(xhr.response);
                     resolve(response);
                 } catch (e) {
+                    // resolve('https://image.openmoviedb.com/kinopoisk-images/1704946/e0eb0512-5180-41d4-8788-f22d77b79501/orig');
                     reject('Ошибка при парсинге ответа от API');
                 }
             } else {
+                // resolve('https://image.openmoviedb.com/kinopoisk-images/1704946/e0eb0512-5180-41d4-8788-f22d77b79501/orig');
                 reject('Ошибка при запросе изображения');
             }
         };
@@ -169,6 +216,8 @@ document.addEventListener("DOMContentLoaded", function () {
     //         });
     //     }
     // });
+    
     getMyAPIKey();
     getMoviesNames();
+    
 });
