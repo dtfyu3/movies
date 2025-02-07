@@ -1,3 +1,4 @@
 .env
 libs/swiper-bundle.min.css
 libs/swiper-bundle.min.js
+libs/color-thief.min.js
