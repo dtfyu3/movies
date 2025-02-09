@@ -4,26 +4,26 @@ const swiper = new Swiper('.swiper', {
     slidesPerView: 1,
     pagination: {
         el: '.swiper-pagination',
+        type: "fraction"
     },
     navigation: {
         nextEl: '.swiper-button-next',
         prevEl: '.swiper-button-prev',
     },
-
     scrollbar: {
         el: '.swiper-scrollbar',
     },
+    grabCursor: 'true'
 });
 setTimeout(() => {
     swiper.update();
 }, 100);
-// swiper.on('slideNextTransitionEnd', function () {
-    
-// });
-swiper.on('slideChangeTransitionEnd',function(){
+
+swiper.on('slideChangeTransitionEnd', function () {
     const card = document.querySelector('.swiper-slide-active');
     if (card.dataset.loaded) {
-        getGradientFromImage(card.querySelector('.card-poster img'))
+        getGradientFromImage(card.querySelector('.card-poster img'));
+        updateMovieInfo();
     }
 })
 const colorThief = new ColorThief();
@@ -31,6 +31,9 @@ const colorThief = new ColorThief();
 const swiperContainer = document.querySelector('.swiper');
 let API_KEY;
 let debounceTimeout;
+const moviesNamesDict = {
+    'Славные парни': 'Goodfellas'
+}
 function getMyAPIKey() {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', '../../api/api.php?get_action=getMyAPIKey', true);
@@ -117,7 +120,6 @@ function addCards(cards) {
             container.prepend(fragment);
             container.childNodes.forEach((card, i) => {
                 const img = card.querySelector('.card-poster img');
-
                 // Если картинка еще не загружена
                 if (!img.src || img.src === '' || img.src === 'http://movies/') {
                     createSpinner(card.querySelector('.card-poster'));
@@ -160,23 +162,14 @@ function loadMoviePoster(card, movie) {
             if (!response['docs']) img.src = response
             else img.src = response['docs'][0]['poster']['url'];
 
-            // img.src = response['docs'][0]['poster']['url'] || response;
-            // img.src = response;      //test
             img.onload = function () {
                 removeSpinner(card);
                 getGradientFromImage(img)
             }
-
-            // function toHex(color) {
-            //     let r = color[0];
-            //     let g = color[1];
-            //     let b = color[2];
-            //     return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase();
-            // }
-
-            let genres = response['docs'][0]['genres'];      //real
+            let genres = response.docs?.[0]['genres'] || '';      //real
             card.dataset['genres'] = genres.map(item => item.name).join(', ');
-            card.dataset['description'] = response['docs'][0]['description'] || '';
+            card.dataset['description'] = response.docs?.[0]['description'] || 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Lorem ipsum dolor sit amet consectetur adipisicing elit. Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis, praesentium numquam vel sint quidem temporibus, amet mollitia inventore at corrupti deleniti voluptates distinctio accusantium eveniet. Minus optio sed voluptatibus repudiandae?';
+            card.dataset['year'] = response.docs?.[0]['year'] || '';
             updateMovieInfo();
         })
         .catch(error => {
@@ -203,6 +196,8 @@ function updateMovieInfo() {
     if (!activeCard) return;
     const genre = activeCard.dataset.genres || '';
     const description = activeCard.dataset.description || '';
+    const year = activeCard.dataset.year || '';
+    document.getElementById('movie-year').textContent = year;
     document.getElementById('movie-genre').textContent = genre;
     document.getElementById('movie-description').textContent = description;
     checkDescriptionTextOverflow();
@@ -222,6 +217,7 @@ function fetchMovieImage(card, movie) {
             resolve(img.src.trim())
         }
         const container = card.querySelector('.card-poster');
+        movie.name = movieNameAssoc(movie.name);
         const apiUrl = `https://api.kinopoisk.dev/v1.4/movie/search?query=${encodeURIComponent(movie.name)}`; //real
         // const apiUrl = '';       //test
         const xhr = new XMLHttpRequest();
@@ -249,22 +245,17 @@ function fetchMovieImage(card, movie) {
 
     });
 }
-// function updateMarquee() {
-//     document.querySelectorAll(".movie-card").forEach(card => {
-//         const text = card.querySelector(".card-header span");
-//         const header = card.querySelector(".card-header");
-//         const headerWidth = header.clientWidth - (parseFloat(getComputedStyle(header).paddingLeft)) * 4;
-//         if (text && header && text.scrollWidth > headerWidth) {
-//             card.addEventListener("mouseenter", () => {
-//                 text.classList.add("marquee");
-//             });
 
-//             card.addEventListener("mouseleave", () => {
-//                 text.classList.remove("marquee");
-//             });
-//         }
-//     });
-// }
+function movieNameAssoc(name) {
+    /**
+ * Returns the English name of a movie if it exists in the moviesNamesDict.
+ * 
+ * @param {string} name - The original name of the movie.
+ * @returns {string} - The English name of the movie if found, otherwise the original name.
+ */
+    if (name in moviesNamesDict) return moviesNamesDict[name]
+    else return name;
+}
 function toggleDescription() {
     const infoBlock = document.querySelector('.movie-info');
     infoBlock.classList.toggle('expanded');
