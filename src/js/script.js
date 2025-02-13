@@ -32,7 +32,8 @@ const swiperContainer = document.querySelector('.swiper');
 let API_KEY;
 let debounceTimeout;
 const moviesNamesDict = {
-    'Славные парни': 'Goodfellas'
+    'Славные парни': 'Goodfellas',
+    'Помни': 'Memento'
 }
 function getMyAPIKey() {
     const xhr = new XMLHttpRequest();
@@ -231,12 +232,12 @@ function fetchMovieImage(card, movie) {
                     const response = JSON.parse(xhr.response);
                     resolve(response);
                 } catch (e) {
-                    // resolve('https://image.openmoviedb.com/kinopoisk-images/1704946/e0eb0512-5180-41d4-8788-f22d77b79501/orig');         //test
-                    reject('Ошибка при парсинге ответа от API');
+                    resolve('https://image.openmoviedb.com/kinopoisk-images/1704946/e0eb0512-5180-41d4-8788-f22d77b79501/orig');         //test
+                    // reject('Ошибка при парсинге ответа от API');
                 }
             } else {
-                // resolve('https://image.openmoviedb.com/kinopoisk-images/1704946/e0eb0512-5180-41d4-8788-f22d77b79501/orig');         //test
-                reject('Ошибка при запросе изображения');
+                resolve('https://image.openmoviedb.com/kinopoisk-images/1704946/e0eb0512-5180-41d4-8788-f22d77b79501/orig');         //test
+                // reject('Ошибка при запросе изображения');
             }
         };
         xhr.onerror = function () {
