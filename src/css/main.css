@@ -19,7 +19,7 @@ body {
     box-sizing: border-box;
     /* background: linear-gradient(45deg, #ff6b6b, #f7d147, #6b9bff, #1f8b88); */
     background-size: 400% 400%;
-    animation: gradientAnimation 5s ease-in-out infinite;
+    animation: gradientAnimation 3s ease-in-out infinite;
     transition: background 5s ease;
     --b: '';
 }
@@ -40,7 +40,7 @@ body::after {
     display: block;
     /* background: linear-gradient(45deg, rgb(197, 62, 34), rgb(11, 7, 6), rgb(228, 229, 230), rgb(157, 156, 159)); */
     background: var(--b);
-    animation: gradientAnimation 5s ease-in-out infinite;
+    animation: gradientAnimation 3s ease-in-out infinite;
     background-size: 400% 400%;
     transition: background 5s ease;
 }
@@ -108,10 +108,12 @@ body::after {
     aspect-ratio: 2 / 3;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
 .movie-card:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
+
 .card-poster img {
     width: 100%;
     height: 100%;
@@ -256,7 +258,7 @@ body::after {
     text-overflow: ellipsis;
     position: relative;
     line-height: 1.2em;*/
-    
+
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -347,6 +349,7 @@ body::after {
     .show-more {
         font-size: 14px;
     }
+
     /* html,body, .movies-grid{
         height: 100vh;
         min-height: 100vh;
@@ -358,9 +361,11 @@ body::after {
         height: 80vh;
         min-height: 80vh;
     }
-    .swiper-pagination{
+
+    .swiper-pagination {
         font-size: 14px;
     }
+
     .movie-card {
         width: 100%;
         height: auto;
